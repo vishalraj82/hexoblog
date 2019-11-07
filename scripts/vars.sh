@@ -1,0 +1,10 @@
+#! /bin/bash
+
+
+APP_DIR=$SCRIPT_DIR/..
+PROXY_CONF_DIR=$APP_DIR/proxy/conf.d
+
+DOCKER_ENV_FILE=$APP_DIR/.env
+
+PROXY_CONF_FILE=$PROXY_CONF_DIR/blog.conf
+PROXY_CONF_TPL_FILE=$PROXY_CONF_DIR/blog.conf.tpl

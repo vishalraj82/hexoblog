@@ -1,0 +1,40 @@
+version: '3'
+networks:
+    backend:
+        driver: bridge
+        ipam:
+            config:
+                - subnet: 10.208.0.0/24
+services:
+    blog:
+        image: $DOCKER_IMAGE
+        container_name: $DOCKER_BLOG_CONTAINER
+        build:
+            context: ./blog
+            dockerfile: Dockerfile
+            args:
+                BLOG_NAME: $BLOG_NAME
+                HEXO_PORT: $HEXO_PORT
+                GIT_REPO: $GIT_REPO
+        volumes:
+            - ./blog/entrypoint.sh:/hexo/entrypoint.sh
+        networks:
+            backend:
+                ipv4_address: ${BLOG_HOST_IP}
+        restart: always
+        extra_hosts:
+            - proxy:${PROXY_HOST_IP}
+    proxy:
+        image: nginx:1.17.5-alpine
+        container_name: $DOCKER_PROXY_CONTAINER
+        ports:
+            - 80:80
+        volumes:
+            - ./proxy/conf.d/blog.conf:/etc/nginx/conf.d/blog.conf
+        networks:
+            backend:
+                ipv4_address: ${PROXY_HOST_IP}
+        depends_on:
+            - blog
+        extra_hosts:
+            - blog:${BLOG_HOST_IP}
